@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Exercicis 1, 2, 3 i 4: Mapa amb marcador i informació</title>
+    <link rel="stylesheet" href="https://openlayers.org/en/v6.5.0/css/ol.css" type="text/css">
+    <script src="https://openlayers.org/en/v6.5.0/build/ol.js"></script>
+</head>
+<body>
+    <div id="map" class="map"></div>
+    <input type="text" id="inputNom" placeholder="Nom">
+    <input type="text" id="inputLat" placeholder="Latitud">
+    <input type="text" id="inputLon" placeholder="Longitud">
+    <button onclick="afegirMarcador()">Afegir Marcador</button>
+
+    <script>
+        var map = new ol.Map({
+            target: 'map',
+            view: new ol.View({
+                center: ol.proj.fromLonLat([2.1734, 41.3851]),
+                zoom: 13
+            }),
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ]
+        });
+
+        var marker = new ol.Feature({
+            geometry: new ol.geom.Point(
+                ol.proj.fromLonLat([2.1734, 41.3851])
+            ),
+            name: 'Barcelona'
+        });
+
+        var markerStyle = new ol.style.Style({
+            image: new ol.style.Icon({
+                src: 'https://openlayers.org/en/v6.5.0/examples/data/icon.png'
+            })
+        });
+
+        marker.setStyle(markerStyle);
+
+        var markerLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: [marker]
+            })
+        });
+
+        map.addLayer(markerLayer);
+
+        marker.on('click', function(evt) {
+            var name = evt.target.get('name');
+            alert('Nom: ' + name);
+        });
+
+        function afegirMarcador() {
+            var inputNom = document.getElementById('inputNom').value;
+            var inputLat = parseFloat(document.getElementById('inputLat').value);
+            var inputLon = parseFloat(document.getElementById('inputLon').value);
+
+            var marcador = new ol.Feature({
+                geometry: new ol.geom.Point(
+                    ol.proj.fromLonLat([inputLon, inputLat])
+                ),
+                name: inputNom
+            });
+
+            var marcadorStyle = new ol.style.Style({
+                image: new ol.style.Icon({
+                    src: 'https://openlayers.org/en/v6.5.0/examples/data/icon.png'
+                })
+            });
+
+            marcador.setStyle(marcadorStyle);
+
+            markerLayer.getSource().addFeature(marcador);
+
+            marcador.on('click', function(evt) {
+                var name = evt.target.get('name');
+                alert('Nom: ' + name);
+            });
+        }
+    </script>
+</body>
+</html>
